@@ -1,0 +1,1326 @@
+CS32 Notes
+
+http://cs.ucla.edu/classes/winter19/cs32
+
+Midterms:
+Wed., Jan. 30, 6:00pm-7:05pm or 6:30pm-7:35pm
+Tue., Feb. 26, 6:00pm-7:05pm or 6:30pm-7:35pm
+
+Final:
+Sat., Mar. 16, 11:30am-2:30pm
+
+Friday, Jan. 11 will be a lecture day at the time of your discussion
+
+Start early!!!
+
+Develop incrementally!!!
+
+Read what we write!!!
+
+interface (what)
+vs
+implementation (how)
+
+Header files 
+	#include "Circle.h"
+	Don't  need to include Circle.cpp
+	In Java, just need to do extends etc. then it will find the file for us
+	In cpp, we have to include all implementations etc. within the code
+	When building in the command line, if all the object files  are up to date/created before the source file has been updated, then there is no reason to build again. If the object files are out of date compared to the source file, build and compile again to update. EXE files vs object files. They linked together to revise the executable
+	Linking, making file
+
+<> tells the  program to look for a predefined folder
+For most applications we will be using ""
+More than one main function, cannot build an executable out of that
+Should not have more than 1 main routine within a project
+2 cpp files with same function name
+int x in one file want to access it from other files, use extem x, whcih tells the compiler that we are not creating an int but we want to access it from the outside
+Converntion: Each class -> 2 files: header (.h) and implementation (.cpp)
+Name of files are not critical
+
+The text in the header file is compiled
+DO NOT EVER #include files.cpp
+
+If you want to use a circle and point, include circle and same with point, but duplication can happen and cause errors
+The solution is peculiar (Compiler directives)
+Don't worry about circular dependancy 
+	It solves itself as we don't need to know all the details of a certain object
+
+Point.h
+=========
+#ifndef POINT_INCLUDED
+#define POINT_INCLUDED
+
+class Point
+{
+	...
+};
+
+#endif
+
+Circle.h
+========
+
+#ifndef CIRCLE_INCLUDED
+#define CIRCLE_INCLUDED
+#include "Point.h"
+
+class Circle
+{
+	...
+	Point m_center;
+	double m_r;	
+};
+
+#endif
+
+myapp.cpp
+=========
+
+#include "Circle.h"
+
+int main()
+{
+	Circle c(.....);
+	...
+}
+
+==================================
+
+Student.h
+=========
+
+#ifndef STUDENT_INCLUDED
+#define STUDENT_INCLUDED
+
+#include "Course.h"
+
+class Student 
+{
+	...
+	void enroll(Course* cp);
+	...
+	Course* m_studyList[10];
+	...
+};
+
+#endif //STUDENT_INCLUDED
+
+Course.h
+========
+
+#ifndef COURSE_INCLUDED
+#define COURSE_INCLUDED
+
+#include "Student.h"
+
+class Student 
+{
+	...
+	Student* m_roster[1000];
+	...
+};
+
+#endif //COURSE_INCLUDED
+
+blah.cpp
+========
+
+#include "Student.h"
+#include "Course.h"
+
+void f(Student* sp, Course* cp)
+{
+	sp->enroll(cp)
+	...
+	Student s2;
+	...
+}
+
+========================
+
+foo.cpp
+=======
+#include <iostream>
+#include <iostream>
+#include <iostream>
+class A;
+class A;
+#include <iostream>
+class A;
+{
+	...
+}
+#include <iostream>
+class A;
+
+int main ()
+{
+	
+}
+=======================
+
+class Circle
+{
+	public:
+		Circle(double x, double y, double r);
+		...
+	private:
+		double m_x;
+		double m_y;
+		double m_z;
+};
+
+Circle::Circle(double x, double y, double r)
+	: m_x(x), m_y(y),  m_r(r)
+{
+	...
+}
+
+class  StickFigure
+{
+	public:
+		stickkFigure(double b1, double headDiam, std::string nm, double hx, double hy)
+		
+		...
+	private:
+		std::string m_name;
+		Circle m_head;
+		double m_bodyLength;
+};
+
+StickFigure::StickFigure(double b1, double headDiam, std::string nm, double hx, double hy)
+: m_name (nm)
+{
+	m_name = nm;
+	m_head = ???;
+	m_bodyLength = b1;
+}
+
+If you declare  no constructor at all, the constructor writes a zero-argument constructor(a "default constructor") for you.
+
+Steps of construction:
+1. -------------------
+2. Construct each data member, consultig the member initialization list. If a  member is not listed:
+	* if it is of builtin type, its left uninitialized
+	* if it is of a class type,  it's default-constructed (Having no default constructor is an error in this case)
+3. Execute the body of the constructor
+
+class String
+{
+	public:
+		String(const char* text);
+		String();
+		...
+	private:
+		// Class invariant:
+		//  m_text points to a dynamically   allocated array of m_len+1 chars
+		//  m_len >=  0
+		//  m_len == strlen(m_text
+		char* m_len;
+		int m_len;
+};
+
+
+// Class invariant
+//  EITHER
+//   m_text points to a dynamically allocatted array of  m_len+1 chars
+//	 m_len > 0 
+//	 m_len ==  strlen(m_text)
+//  OR
+//	 m_text == nullptr
+// 	 m_len == 0
+
+
+void h()
+{
+	String s("Hello");
+	String s2;
+	...
+}
+
+=========================================
+
+class String
+{
+	public:
+		String(const char* text);
+		String();
+		~String();
+		String& operator=(const String& rhs);
+		...
+	private:
+		// Class invariant
+		//   m_text points to to a dynamically allocated array of m_len+1 chars
+		//   m_len >= 0
+		//   m_len == strlen(m_text)
+		char* m_text;
+		int m_length;
+};
+
+String::string(const char* text)
+{
+	m_len = strlen(text);
+	m_text =  new char[m_len+1];
+	strcpu(m_text, text);
+}
+
+String::string()
+{
+	m_len = 0
+	m_text = new char[1];
+	m_text[0] = '\0';
+}
+
+String::~String()
+{
+	delete [] m_text;
+}
+
+String::String(const String& other)
+{
+	m_len = other.m_len;
+	m_text = new char[m_len+1];
+	strcpy (m_text, other.m_text);
+}
+
+String& String::operator=(const String& rhs)
+{
+	if(this != &rhs)
+	{
+		String temp(rhs);
+		swap(temp);
+	}
+	return *this;qq
+}
+
+"copy-and-swap"
+
+void f(String t)
+{
+	String u ("wow");
+	...
+	u = t; //means u.operator(t);
+	...
+}
+
+void g()
+{
+	for(.....)
+		h();
+}
+
+void h()
+{
+	String s("Hello");
+	String s2;
+	...
+}
+
+char line [1000];
+cin.getline(line, 1000);
+String t(line);
+cin.getline(line, 1000);
+
+String s("Hello");
+String t(s); // copy
+
+String h()
+{
+	String x;
+	...
+	return x;
+}
+
+========================
+Discussion:
+1/25 - There is a lecture, not a discussion
+Dynamic arrays are used to work on memory that can be dynamic and change size in an array
+Pointers point at address of an object
+In a constructor's default assignment, read right to left?
+Inheritance
+Copy constructors
+	Has pointers that will copy the same object to two different things
+	Gives people access to a copy of the  obj  without affecting the  original
+Using array to implement linklist
+
+void transfer(Account& from, Account& to, double amt)
+{
+	from.debit(amt);
+	to.credit(amt);
+	if(amt >= 20000)
+		fileForm();
+}
+
+Linked list
+	List linked by pointer to pointer to... that starts with a pointer and ends with a nullptr
+	Nodes
+
+struct Node
+{
+	int   data;
+	Node* next;
+};
+
+Node* head;
+...
+
+Node* p
+for(p = head; p != 99; p = p->next)
+	;
+	
+if(p!= nullptr)
+{
+	Node* newGuy = new Node;
+	newGuy->data = 32
+	p->next = newGuy
+	newGuy->next = p->next
+}
+
+Any time you write p->something, make sure:
+	p has been previously given a value
+	p is not the null pointer value
+
+Draw Pictures!!!!!!! When tracing through the code, do what the code says, not what you wish it to do. 
+Don't do things in the wrong order!
+Advice: set values in the new node first
+Check: typical situation (activity in the middle), at  the head, at the tail, empty list, one-element list
+
+struct Node
+{
+	int data;
+	Node* next;
+	Node* prev;
+};
+
+Circular doubly linked lists
+	linked list with a dummy node
+
+Stack:
+	Create an empty stack
+	Push an item onto the stack
+	Pop an item from the stack
+	Look at top item on the stack
+	Is the stack empty?
+=================
+	How many items are in the stack
+	Look at any item in the stack
+
+#include <stack>
+using namespace std;
+int main()
+{
+	stack<int> s;
+	s.push(10);
+	s.push(20);
+	int n = s.top();
+	s.pop(); //does not return a value
+	if( ! s.empty())
+		cout  << s.size();
+}
+
+Queue:
+	Create an empty queue
+	Enqueue an item
+	Dequeue an item
+	Look at the front item in the queue
+	Is the queue empty?
+===========
+	How many items are in the queue?
+	Look at the back item in the queue
+	Look at any item in the queue
+
+FIFO Data Structure (First in, first out)
+
+#include <queue>
+using namespace std;
+
+int main()
+{
+	queue<int> q;
+	q.push(10);
+	q.push(20);
+	int n = q.front();
+	q.pop();
+	if(! q.empty())
+	{
+		cout << q.front() << endl;
+		cout << q.back() << endl;
+	}
+	cout << q.size() << endl;
+	int m = q.back();
+}
+
+
+dept = 'IT' and salary >= 70000 and name != 'SMITH'
+
+f(x, y, z)
+add(sub(8, div(6, 2)), 1)
++ - 8  / 6 2 1
+
+infix:
+8-6/2+1
+
+postfix:
+8 6 2 / - 1 +
+
+class Circle
+{
+	void move(double xnew, double ynew);
+	void draw() const;
+	double m_x;
+	double m_y;
+	double m_r;
+};
+
+class Rectangle
+{
+	void move(double xnew, double ynew);
+	double m_x;
+	double m_y;
+	double m_dx;
+	double m_dy;	
+};
+
+Circle* ca[100];
+Rectangle*  ra[100];
+...
+
+for(int k  = 0; k < ...; k++)
+	ca[k]->draw();
+for(int k  = 0; k < ...; k++)
+	ra[k]->draw();
+
+void f(Circle* x)
+{
+	x->move(..., ...);
+	x->draw();
+}
+
+void f(Rectangle* x)
+{
+	x->move(..., ...);
+	x->draw();
+}
+
+======================================
+
+class Shape
+{
+	void move(double xnew, double ynew);
+	virtual void draw() const;
+	double m_x;
+	double m_y;
+};
+
+class Circle : public Shape
+{
+	virtual void draw() const;
+	double m_r;
+};
+
+Circle::Circle(double x, double y, double r)
+:  Shape(x, y), m_r(r)
+{}
+
+class Rectangle : public Shape
+{
+	virtual void draw() const;
+	double m_dx;
+	double m_dy;
+};
+
+Shape* pic[100];
+pic[0] = new Circle;
+pic[1] = new Rectangle
+pic[2] = new Circle;
+
+for(int k = 0; k < ...; k++)
+	pic[k]->draw();
+
+void f(Shape& x)
+{
+	x.move(...);
+	x.draw();
+}
+
+Shape::move(double xnew, double ynew)
+{
+	m_x = xnew;
+	m_y = ynew;
+}
+
+void Shape::draw() const
+{
+	... draw a cloud centered at (x, y)
+}
+
+void Circle::draw() const
+{
+	... draw a circle ...
+}
+
+void Rectangle::draw() const
+{
+	... draw a rectangle ...
+}
+
+double Rectangle::diag() const
+{
+	return sqrt(m_dx*m_dx + m_dy*m_dy);
+}
+
+class warningSymbol  : public Shape
+{
+	void move(double xnew,
+			  double ynew);
+	...
+};
+
+void warningSymbol::move(double xnew,
+						 double ynew)
+{
+	Shape::move(xnew, ynew);
+	... flash 3 times ...
+}
+
+Construction:
+1. Construct the base part
+2. Construct the data members
+3. Execute the body of the constructor
+Destruction:
+1. Execute the body of distructor
+2. Destroy the data members
+3. Destroy the base part
+
+class Shape
+{
+	public:
+		Shape(double x);
+		virtual void draw() const = 0;
+		virtual ~Shape() = 0; 
+		...
+	private:
+		double m_x;
+		double m_y;
+};
+
+Shape::Shape(double x, double y)
+	: m_x(x), m_y(y) {}
+
+class Polygon : public Shape
+{
+	public:
+		...
+		virtual ~Polygon();
+	private:
+		...
+		Node* head;
+};
+
+If a class is a designed as  a base class, declare its destructor as a virtual and implement it.
+Merge sort is recursive
+
+Sort an unsorted pile of N items:
+	if(n > 1)
+	{
+		Split the pile into two unsorted piles of N/2 items each
+		Sort the left subpile
+		Sort the right subpile
+		Merge the two resulting sorted subpiles into one sorted pile
+	}
+
+One or more base cases -- situations that can be solved without a recursive call
+Recursive case(s) -- must solve a "smaller" problem: closer to base case
+Recursive solutions may be easier
+
+void sort(int a[], int b, int e)
+{
+	if(e - b >  1) // Base case of Induction
+	{
+		int mid = (b + e) / 2;
+		sort(a, b, mid);
+		sort(a, mid, e);
+		merge(a, b, m, e); // Exchanges the item in the array
+	}
+}
+
+bool contains(a[], int n, int target) // Remember that this is being read top to bottom
+{
+	if(n - 1 <= 0)
+		return false;
+	if(a[n - 1] == target)
+		return true;
+	return contains(a, n - 1, target);
+OR
+	if(n <= 0) /
+		return false;
+	if(a[0] == target)
+		return true;
+	return contains(a+1, n-1, target);
+OR
+	if(n <= 0) // Smallberg does not like this solution, because it will call n times no matter what, too long
+		return false;
+	if(contains(a+1, n-1, target))
+		return true;
+	return a[0] == target;
+}
+
+Inheritance is the basis of OOP
+	Create  new classes drived from a base
+
+Top level base class implementations take over unless otherwise specified in the derived classes
+Upcasting (Implicit), downcasting (Look into it maybe?)
+
+Construction is base then derived
+Destruction is derived then base
+
+Pure virtual functions are denoted with = 0
+They don't do anything
+Lecture 7 has a good cheat sheet
+
+Recursion is like mathematical induction
+	Find base case
+		Trivial cases
+		When should recursion stop?
+	Decompose the problem
+	Solve
+
+=================================================================
+
+Recursion
+Don't trave on programs that can be too big to trace through. Smallberg took 9 times for a 5 element array
+
+There are ways to screw up an inductive proof
+You can end up doing the same with recursion
+Try not to assume for induction
+
+divide-and-conquer
+the-first-and-the-rest
+the-last-and-the-rest
+
+More recursion is worse, just do what you can
+Local variables go on runtime stack
+
+Iteration is normally faster than recursion. Recursion is very helpful in execution paths with more than one recursive calls
+
+Template functions and class templates
+	template<typename T>
+	T minimum(T a, T b)
+	{...}
+
+	Match the template function
+	The instanciated template must compile
+	The compiled code must do what you want it to do already
+	Be specific on what you template
+	
+Template argument deduction
+	Match same template
+	The instatiated template must compile
+	The instatiated template must do what you want
+
+template<typename T>
+T minimum(T a, T b)
+{
+	if(a < b)
+		return a;
+	else
+		return b;
+}
+
+/* ExpensiveToCopyThing minimum(const ExpensiveToCopyThing& a, const ExpensiveToCopyThing& b) 
+// This code is only in the compiler and produced by it
+// we did not do this
+{
+	if(a < b) // What does this do?
+		return a;
+	else
+		return b;
+} 
+
+int minimum(int a, int b)
+{
+	if(a < b)
+		return a;
+	else
+		return b;
+}
+*/
+
+int main()
+{
+	ExpensiveToCopyThing x, y;
+	...
+	... minimum(x, y) ...;
+	...
+	int m, n;
+	...
+	... minimum(m, n) ...;
+	...
+}
+
+=================================================================
+
+template<typename T>
+void g(T x)
+{
+	T y(x);
+	...
+	... minimum(x, y) ...
+	...
+}
+
+template<typename t>
+void f(T x)
+{
+	...
+	g(x);
+	...
+}
+
+int main()
+{
+	... f(i) ...
+	... f(p) ...
+	... f(c) ...
+}
+
+=================================================================
+
+template<typename T>
+T sum(const T a[], int n)
+{
+	T total = T();
+	for(int k = 0; k < n; k++)
+		total += a[k];
+	return total;
+}
+
+/* double sum(double a[], int n) 
+// This code is only in the compiler and produced by it
+// we did not do this
+{
+	double total = double(); // Would not compile ORIGINALLY
+	// double() == 0
+	for(int k = 0; k < n; k++)
+		total += a[k];
+	return total;
+} 
+
+string sum(const string a[], int n)
+{
+	string total = string(); // Would not compile ORIGINALLY
+	// string() == ""
+	for(int k = 0; k < n; k++)
+		total += a[k];
+	return total;
+}
+*/
+
+// *ptr() == nullptr
+// bool() == false
+
+int main()
+{
+	double da[100];
+	...
+	cout << sum(da, 10);
+	...
+	string sa[10] = 
+	{
+	"This", "is", "a", "test."
+	};
+	string s = sum(sa, 4);
+	...
+}
+
+=================================================================
+
+template<typename T>
+class Stack
+{
+public:
+	Stack();
+	void push(const T& x);
+	void pop();
+	T top() const;
+	int size() const;
+private:
+	T m_data[100];
+	int m_top;
+};
+
+class Coord // Code fails
+{
+public: 
+	Coord(int r, int c);
+	Coord();
+	...
+};
+
+/*
+// This code is only in the compiler and produced by it
+// we did not do this
+Stack<int>::Stack()
+{}
+
+void Stack<int>::push(const T& x)
+{
+	m_data[m_top] = x; // Undefined if full
+	m_top++;
+}
+
+Stack<int>::~Stack();
+{}
+
+Stack<Coord>::Stack()
+: m_top(0)
+{}
+
+void Stack<Coord>::push(const Coord& x)
+{
+	m_data[m_top] = x; // Undefined if full
+	m_top++;
+}
+
+Stack<Coord>::~Stack()
+{}
+*/
+
+int main()
+{
+	Stack<int> si;
+	si.push(3);
+	Stack<Coord> sc;
+	sc.push(Coord(3, 5));
+}
+
+STL
+Vector
+	LIFO
+	size()
+		Return size of front
+	front()
+		Return first element in the vector
+	back()
+		Return last element in the vector
+	push_back()
+		Push to back
+	pop_back()
+		Pop the back // Undefined if vector size is zero
+List
+	FIFO and LIFO // Yes, confusing
+	Acts very similarly to a linked list
+	push_back()
+		Push to the back of the list
+	pop_back()
+		Pop the back of the list // Undefined if list size is zero
+	push_front()
+		Push to front of the list
+	pop_front()
+		Pops front of the list // Undefined if list size is zero
+	begin()
+		Returns beginning of the list // Undefined if list size is zero
+	end()
+		Returns end of the list
+	size()
+		Returns size
+	insert(Item, value)
+		Inserts value before given item
+		Returns a pointer to the item just inserted
+
+Cannot manually enter values for the vector if size = 0
+List iterators overload the ++ and -- operators to move through the lists // Yes, much easier
+
+STL: Standard Template Library
+Vectors are better if you want to access specific data than lists
+
+Vectors are more widely used than lists
+Size and capacity of a vector is its elements and its memspace taken respectively
+
+=================================================================
+
+A function f(N) is O(g(N)) if there existes N_0 and k such that  for all N >= N_(0), |f(N)| <= k*g(N)
+
+f(N) is "order g(N)"
+
+Make the most pessimistic choice
+	Compensate even though you are Asian already
+
+O(N) for loop with limit N, find algorithm
+O(1) for most calls, bool returning false
+O(i) for loops with i iterations
+
+Multiply if inside a loop to get time requirement
+Add if same if statement/doing something simple and already a predefined function
+
+functions take O(g(N)) time to call depending on the function
+
+Smart pointer is an abstract tdata type that  stimulates a  pointer
+	unique_ptr
+		Allows one owner of the underlying pointer
+		Emphasis on one
+	shared_ptr
+		Reference counted  smart pointer
+		Multiple pointers to the same object
+	weak_ptr
+Defined as a template class
+
+Multiple methods of sorting algorithms
+Sorting can be good for practice on Big O notation practice
+
+Selection sort
+	Best case  = O(N^2)
+	Worst case = O(N^2)
+	Average case = O(N^2)
+	| 5 3 7 6 1 8 2 4 N
+	1 | 3 7 6 5 8 2 4 N-1
+	1 2 | 7 6 5 8 3 4 N-2
+	1 2 3 | 6 5 8 7 4 N-3
+	1 2 3 4 | 5 8 7 6 N-4
+	1 2 3 4 5 | 8 7 6 .
+	1 2 3 4 5 6 | 7 8 .
+	1 2 3 4 5 6 7 | 8 .
+	1 2 3 4 5 6 7 8 | 2
+
+Bubble sort
+	Best case    = O(N)
+	Worst case   = O(N^2)
+	Average case = O(N^2)
+	5 3 7 6 1 8 2 4 |
+	3 5 6 1 7 2 4 | 8
+	3 5 1 6 2 4 | 7 8
+	3 1 5 2 4 | 6 7 8
+	1 3 2 4 | 5 6 7 8
+	1 2 | 3 4 5 6 7 8 (3 not involved in the last swap)
+	| 1 2 3 4 5 6 7 8 (No swaps)
+
+Insertion sort
+	Best case    = O(N)
+	Worst case   = O(N^2)
+	Average case = O(N^2)
+	5 | 3 7 6 1 8 2 4
+	3 5 | 7 6 1 8 2 4
+	3 5 7 | 6 1 8 2 4
+	3 5 6 7 | 1 8 2 4
+	1 3 5 6 7 | 8 2 4
+	1 3 5 6 7 8 | 2 4
+	1 2 3 5 6 7 8 | 4
+	1 2 3 4 5 6 7 8 |
+
+=================================================================
+
+O(N^2)
+Selection sort
+Bubble sort
+Insertion sort
+
+mergesort   worst,          average,                best   O(N log N)     array/vector/list
+quicksort   worst, O(N^2)   average,   O(N log N)                         array/vector but not list
+
+list<int> li;
+...
+li.sort(); // uses <
+
+list<Employee> le;
+le.sort(makesGreaterThan);
+
+A tree has a distinguished node (the root) and a unique pathform the root to any node
+
+struct Node
+{
+	string data;
+	vector<Node*> children;
+	Node* parent; // Sometimes this member is a part of a node
+};
+
+Node* root = nullptr;
+
+... build the tree ...
+
+int countNodes(const Node* t)
+{
+	if(t == nullptr)
+		return 0;
+	int total = 1;
+	for(int k = 0; k< t->children.size(); k++)
+		total += countNodes(t->children[k]);
+	return total;
+}
+
+void printTree(const Node* t, int depth = 0);
+
+int main()
+{
+	Node* windsor;
+	...
+	printTree(windsor);
+}
+ // preorder traversal
+void printTree(const Node* t, int depth)
+{
+	if(t != nullptr)
+	{
+		cout << string(2*depth, ' ') << t->data << endl;
+		for(int k = 0; k < t->children.size(); k++)
+			printTree(t->children[k], depth+1);
+	}
+}
+
+preorder traversal
+	process the node
+	process the children of that node
+
+postorder traversal
+	process the children of a node
+	process that node
+
+inorder traversal
+	process the left subtree
+	process that node
+	process  the right subtree
+
+struct Node
+{
+	string data;
+	Node* oldestChild;
+	Node* nextYoungestSibling;
+};
+
+A binary search tree is either 
+	empty, or
+	a node with a left binary subtree and a right binary subtree
+		The value at every node in the left binary subtree is less than or equal to the value at this node
+		The value at every node in the right binary subtree is greater than or equal to the value at this node
+
+struct Node
+{
+	string name; // data for a node
+	vector<Node* children;
+};
+
+Node* root;
+
+void printTree(const Node* t)
+{
+	if(t != nullptr)
+	{
+		printTree(t->left);
+		cout << t->data << endl;
+		printTree(t->right);
+	}
+}
+
+=================================================================
+
+Time complexity
+Space complexity?
+Sorting
+	Methods
+		Selection sort
+		Bubble sort
+		Insertion sort
+		Merge sort
+		Quick sort
+
+Selection sort is finding minimum and putting it into the head
+Insertion sort is finding the first element and comparing with the previous element
+Bubble sort in essence swaps until each element is in place
+Merge sort is splitting and then remerging elements
+Quick sort is setting a pivot and moving elements around 
+Shell sort
+Quicksort 3-way
+Heap sort
+Bucket sort
+
+Node
+Root
+Leaf/Parent
+Subtree
+Levels
+Height/Depth
+No loops, no shared children
+Tree is a data structure
+n vertices has n-1 edges
+
+Preorder
+Inorder
+postorder
+Level-order
+
+=================================================================
+
+#include <set> // defines std::set std::multiset
+
+set<int> s;
+s.insert(10);
+s.insert(30);
+...
+
+#include <map>
+using namespace std;
+
+map<string, double> ious;
+
+string name;
+double amt;
+while(cin >> name >> amt)
+	ious[name] += amt;
+
+cout << ious.size() << " people owe me money" << endl;
+for(map<string, double>::iterator p = ious.begin(); p!= ious.end(); p++)
+	cout << p->first << " owes me $" << p->second << endl;
+
+map<string, double>::iterator p ious.find("fred");
+if(p == ious.end())
+	... fred not found ...
+else
+	cout << "fred's amount is" << p->second << endl;
+
+multimap<string, double> borrowings;
+...
+pair<multimap<string, double>::iterator, multimap<string, double>::iterator> pr = borrowings.equal_range("fred");
+if(pr.first == pr.second)
+	... fred not found ...
+else
+	for(auto p = pr.first; p != pr.second; p++)
+		cout << "fred borrowed $" << p->second << endl;
+
+bool f(int a, auto b = 3.5);
+
+hash table
+collision: two different keys map to the same bucket
+
+load factor = number of items/ number of buckets = avg linked-list length
+
+hash function: cheap, deterministic, uniformly distributed result
+
+Beyond binary search  tree
+B-tree
+B+ Tree is a tree structure of vectors
+BST is difficult for algorithm design
+Heap
+	Considered as a complete binary tree
+	Every node carries value >= its children
+	Heaps can merge linked list
+
+Hash tables
+	Take a key and map it to a number
+	Hash  tables operations
+		Insert
+		Remove
+		Search
+	Hash tables can store people
+	
+FNV-1 variation
+
+unsigned int h = 2166136261U;
+for(int i = 0; i < key.size(); k++)
+{
+	h += key[k];
+	h *= 16777619;
+}
+
+reasonably-balanced binary search tree is O(log N) for insert, erase, find, hash table with a fixed number of buckets is O(N) for insert, erase, find (but with a very small constant of proportionality)
+(resizeable) hash table with a fixed maximum load factor is O(1) [amortized] for insert, erase, find (assuming a uniform hash function)
+
+...
+#include <unordered_map>
+using namespace std;
+...
+
+unordered_map<string, double> ious;
+
+strign name;
+double amt;
+while(cin >> name >> amt)
+	ious[name]+= amt;
+
+for(auto p = ious.begin(); p != ious.end(); p++)
+	cout << p->first << " owes me $" << p->second << endl;
+
+Priority queue
+	Insert O(log N)
+	Remove O(log N)
+
+A complete binary tree is a binary tree filled at each level except possibly the  bottom, which is filled left to right
+
+A (max) heap is a complete binary tree here each ndoe has a  value >= all the nodes in its subtrees
+
+A min heap is a compete binary tree where each node has a value <= all the nodes in its subtrees
+Heap
+	Insertion
+		1. Add in a way that keeps the tree a complete binary tree
+		2. Bubble sort upwards its path to the root
+	Remove:
+		1. Remove the root
+		2. Take the bottommost-rightmost item and promote it to root
+		3. Remake the tree through bubble sorting
+			a. Find the biggest through it and its children
+			b. Use trickle down method
+
+Heap operations guideline: first make it a complete binary tree, then fix it (remaking it a heap)
+
+insert: Add to tree, bubblle up to proper position
+
+Remove highest (lowest for minheap) priority item: first make it a complete binary tree (by promoting the bottom rightmost item to be the root), then trickle down the root to the proper place
+
+O(N log N) average case:
+quicksort: worst case O(N ^ 2), constant of proportionality for N log N is  best of the  three introsort: worst case O(N log N)
+	introsort: Worst case O(N log N)
+
+Merge sort: requires extra storage to have a good constant of proportionality, worst case O(N log N)
+
+heapsort: constant of proportionality not as good as quick sort, worst case O(N log N)
+
+unordered_map<string, double> ious;
+
+string name;
+double amt;
+
+while(cin >> name << amt)
+	ious[name] += amt;
+
+cout << ious.size() << endl; // Writes 3
+
+if(ious.find("Ricky") == ious.end())
+	cout << "Ricky is not in the map" << endl;
+
+for(auto p = ious.begin; p != ious.end(); p++)
+	cout << p->first << " owes me $" << p->second << endl;
+
+=================================================================
+
+Heap is a complete binary tree
+Implemented as an array
+Sometimes started storing at index 1, 0 is NULL/invalid
+Check heap order on the exam
+Insertion, Deletion, sorting
+Make sure your heap is properly made
+	
+	Use a min heap for sorting
+
+Know
+	Modern features about C++
+	Data structures
+	Algorithms and complexity analysis
+Look into the details more!!!
+Remember complexity rules!
+
+Construction order
+Destructors, copy constructors, Assignment operators
+Base/derived classes and inheritance of members
+Automaitic conversion of Derived* to Base* and Derived& to Base&
+Virtual functions, overriding, Base members...
+
+Big-O and trees are going to be a big chunk of the midterm and moving forward in life
+Understand your hash tables, load factors, and so on
+Never assume collisions are impossible
+Not in CS32
+	No multiple, private, and protected inheritance
+	AVL, 2-3, Red-black trees, BUT you must know what they do
+	No hash functions needed to remember
+	No graphs
+	No accurate names of member functions of STL containers
+No points deducted for wrong function name, but remember operations for each one!!!
+Just understand what you are doing specifically
